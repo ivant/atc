@@ -352,8 +352,8 @@ function tutorial_init() {
 }
 
 function tutorial_complete() {
-  if(!("first-run-time" in localStorage)) tutorial_open();
-  localStorage["first-run-time"] = time();
+  if(!("first-run-time" in prop.storage)) tutorial_open();
+  prop.storage["first-run-time"] = time();
 }
 
 function tutorial_open() {

@@ -6,7 +6,7 @@ function ui_init_pre() {
   prop.ui.scale_min = 1; // min scale
   prop.ui.scale         = prop.ui.scale_default;
 
-  if('atc-scale' in localStorage) prop.ui.scale = localStorage['atc-scale'];
+  if('atc-scale' in prop.storage) prop.ui.scale = prop.storage['atc-scale'];
 }
 
 function ui_zoom_out() {
@@ -33,7 +33,7 @@ function ui_zoom_reset() {
 }
 
 function ui_after_zoom() {
-  localStorage['atc-scale'] = prop.ui.scale;
+  prop.storage['atc-scale'] = prop.ui.scale;
   prop.canvas.dirty = true;
 }
 

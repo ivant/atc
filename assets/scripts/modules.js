@@ -3,6 +3,8 @@
 
 // all modules, prefix with "-" to signify library; <name>_init etc. won't be called
 var MODULES=[
+  "browser",
+  
   "-util",
   "-animation",
 

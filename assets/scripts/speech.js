@@ -4,7 +4,7 @@ function speech_init() {
   prop.speech.synthesis = window.speechSynthesis;
   prop.speech.enabled = false;
 
-  if('atc-speech-enabled' in localStorage && localStorage['atc-speech-enabled'] == 'true') {
+  if('atc-speech-enabled' in prop.storage && prop.storage['atc-speech-enabled'] == 'true') {
     prop.speech.enabled = true;
     $(".speech-toggle").addClass("active");
   }
@@ -31,6 +31,5 @@ function speech_toggle() {
     prop.speech.synthesis.cancel();
   }
 
-  localStorage['atc-speech-enabled'] = prop.speech.enabled;
-
+  prop.storage['atc-speech-enabled'] = prop.speech.enabled;
 }

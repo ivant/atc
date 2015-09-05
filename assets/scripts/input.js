@@ -318,7 +318,7 @@ function input_run() {
     }
     return true;
   } else if(prop.input.callsign == "clear") {
-    localStorage.clear();
+    prop.storage.clear();
     location.reload();
   } else if(prop.input.callsign == "airport") {
     if(prop.input.data) {
