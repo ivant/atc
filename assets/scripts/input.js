@@ -27,6 +27,9 @@ function input_init() {
     if(e.which == 27) {
       if(prop.tutorial.open) tutorial_close();
       else if($("#airport-switch").hasClass("open")) ui_airport_close();
+      
+      // ESC causes the window to break out of fullscreen mode.
+      e.preventDefault();
     }
     // Minus key to zoom out, plus to zoom in
     if(e.which == 189 || (is_firefox && e.which == 173)) {
@@ -50,6 +53,13 @@ function input_init() {
     }
   });
 
+  $(window).keyup(function(e) {
+    if (e.which == 27) {
+      // ESC causes the window to break out of fullscreen mode.
+      e.preventDefault();
+    }
+  });
+  
   $("#canvases").bind("DOMMouseScroll mousewheel", function(e) {
     if (e.originalEvent.wheelDelta > 0 || e.originalEvent.detail < 0) {
       ui_zoom_in();
@@ -185,18 +195,20 @@ function input_keydown(e) {
       input_change();
     }
     prop.input.history_item = null;
-  } else if(e.which == 38) {
+  } else if(e.which == 38) { // up key
     input_history_prev();
     e.preventDefault();
-  } else if(e.which == 40) {
+  } else if(e.which == 40) { // down key
     input_history_next();
     e.preventDefault();
   } else if(e.which == 9) { // tab key
-    if(!prop.input.tab_compl.matches) {
-      tab_completion_match();
+    if (!e.altKey && !e.ctrlKey && !e.metaKey) {
+      if(!prop.input.tab_compl.matches) {
+        tab_completion_match();
+      }
+      tab_completion_cycle({backwards: e.shiftKey});
+      e.preventDefault();
     }
-    tab_completion_cycle({backwards: e.shiftKey});
-    e.preventDefault();
   } else if(e.which == 27) { // ESC
     $("#command").val("");
     input_change();

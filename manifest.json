@@ -12,6 +12,7 @@
     }
   },
   "permissions": [
-    "storage"
+    "storage",
+    "app.window.fullscreen.overrideEsc"
   ]
 }
