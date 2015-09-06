@@ -21,25 +21,29 @@ function canvas_init_pre() {
 
 function canvas_init() {
   canvas_add("navaids");
-  canvas_add("info");
-  canvas_add("aircraft");
-  canvas_add("compass");
+  canvas_add("directions");
 }
 
 function canvas_adjust_hidpi() {
   dpr = window.devicePixelRatio || 1;
-  console.log("devicePixelRatio:"+dpr);
-  if(dpr > 1) {
-    hidefCanvas = $("#navaids-canvas").get(0);
-    w = $(hidefCanvas).width();
-    h = $(hidefCanvas).height();
-    $(hidefCanvas).attr('width', w * dpr);
-    $(hidefCanvas).attr('height', h * dpr);
-    $(hidefCanvas).css('width', w );
-    $(hidefCanvas).css('height', h );
-    ctx = hidefCanvas.getContext("2d");
-    ctx.scale(dpr, dpr);
-    prop.canvas.contexts["navaids"] = ctx;
+  console.log("devicePixelRatio:" + dpr);
+
+  if (dpr > 1) {
+    for (var name in prop.canvas.contexts) {
+      if (!prop.canvas.contexts.hasOwnProperty(name))
+        continue;
+
+      hidefCanvas = $("#" + name + "-canvas").get(0);
+      w = $(hidefCanvas).width();
+      h = $(hidefCanvas).height();
+      $(hidefCanvas).attr('width', w * dpr);
+      $(hidefCanvas).attr('height', h * dpr);
+      $(hidefCanvas).css('width', w );
+      $(hidefCanvas).css('height', h );
+      ctx = hidefCanvas.getContext("2d");
+      ctx.scale(dpr, dpr);
+      prop.canvas.contexts[name] = ctx;
+    }
   }
 }
 
@@ -274,7 +278,7 @@ function canvas_draw_aircraft(cc, aircraft) {
   // Trailling
   var trailling_length = 12;
   dpr = window.devicePixelRatio || 1;
-  if (dpr > 1) 
+  if (dpr > 1)
     trailling_length *= round(dpr);
   cc.restore();
 
@@ -295,7 +299,7 @@ function canvas_draw_aircraft(cc, aircraft) {
     canvas_draw_separation_indicator(cc, aircraft);
     cc.restore();
   }
-    
+
   // Aircraft
   if(prop.input.callsign.length > 1 && aircraft.matchCallsign(prop.input.callsign.substr(0, prop.input.callsign.length - 1)))
     almost_match = true;
@@ -341,7 +345,7 @@ function canvas_draw_aircraft(cc, aircraft) {
 
     cc.restore();
   }
-  
+
   cc.translate(km(aircraft.position[0]) + prop.canvas.panX, -km(aircraft.position[1]) + prop.canvas.panY);
 
   if(!aircraft.hit) {
@@ -396,7 +400,7 @@ function canvas_draw_future_track(cc, aircraft) {
     cc.strokeStyle = "rgba(224, 128, 128, 0.6)";
     lockedStroke   = "rgba(224, 128, 128, 1.0)";
   }
-  
+
   cc.lineWidth = 2;
   cc.beginPath();
   was_locked = false;
@@ -417,7 +421,7 @@ function canvas_draw_future_track(cc, aircraft) {
       }
       if( i==0 )
         cc.moveTo(x, y);
-      else 
+      else
         cc.lineTo(x, y);
   }
   cc.stroke();
@@ -454,7 +458,7 @@ function canvas_draw_info(cc, aircraft) {
 
     var bar_width = width / 15;
     var bar_width2 = bar_width / 2;
-    
+
     var ILS_enabled = aircraft.requested.runway && aircraft.category == "arrival";
     var lock_size = height / 3;
     var lock_offset = lock_size / 8;
@@ -464,7 +468,7 @@ function canvas_draw_info(cc, aircraft) {
   	//angle for the clipping mask
     var a = point1 - lock_offset;
     var b = bar_width2;
-  	//var c = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));  
+  	//var c = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
     var clipping_mask_angle = Math.atan(b / a);
 
     var match        = false;
@@ -818,4 +822,69 @@ function canvas_update_post() {
 
     prop.canvas.dirty = false;
   }
+
+  if (!game_paused()) {
+    canvas_draw_directions(canvas_get("directions"));
+  }
+}
+
+function canvas_draw_directions(cc) {
+  canvas_clear(cc);
+
+  var callsign = prop.input.callsign.toUpperCase();
+  if (callsign.length === 0) {
+    return;
+  }
+
+  // Get the selected aircraft.
+  var aircraft = prop.aircraft.list.filter(function(p) {
+    return p.isVisible() && p.getCallsign().toUpperCase() === callsign;
+  })[0];
+  if (!aircraft) {
+    return;
+  }
+
+  var pos = to_canvas_pos(aircraft.position);
+  var rectPos = [0, 0];
+  var rectSize = [prop.canvas.size.width, prop.canvas.size.height];
+
+  cc.save();
+  cc.strokeStyle = "rgba(224, 224, 224, 0.7)";
+  cc.fillStyle = "rgb(255, 255, 255)";
+  cc.textAlign    = "center";
+  cc.textBaseline = "middle";
+
+  for (var alpha = 0; alpha < 360; alpha++) {
+    var dir = [sin(radians(alpha)), -cos(radians(alpha))];
+    var p = positive_intersection_with_rect(pos, dir, rectPos, rectSize);
+    if (p) {
+      var markLen = (alpha % 5 === 0 ?
+                     (alpha % 10 === 0 ? 16 : 12) :
+                     8);
+      var markWeight = (alpha % 30 === 0 ?  2 : 1);
+
+      var dx = - markLen * dir[0];
+      var dy = - markLen * dir[1];
+
+      cc.lineWidth = markWeight;
+      cc.beginPath();
+      cc.moveTo(p[0], p[1]);
+      var markX = p[0] + dx;
+      var markY = p[1] + dy;
+      cc.lineTo(markX, markY);
+      cc.stroke();
+
+      if (alpha % 10 === 0) {
+        cc.font = (alpha % 30 === 0 ?
+                   "bold 10px monoOne, monospace" :
+                   "10px monoOne, monospace");
+        var text = "" + alpha;
+        var textWidth = cc.measureText(text).width;
+        cc.fillText(text,
+                    markX - dir[0] * (textWidth / 2 + 4),
+                    markY - dir[1] * 7);
+      }
+    }
+  }
+  cc.restore();
 }

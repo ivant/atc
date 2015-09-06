@@ -180,9 +180,7 @@ function input_keydown(e) {
     if(input_run()) {
       prop.input.history.unshift(prop.input.callsign);
       $("#command").val("");
-      prop.input.command = "";
-      tab_completion_reset();
-      input_parse();
+      input_change();
     }
     prop.input.history_item = null;
   } else if(e.which == 38) {
@@ -199,6 +197,7 @@ function input_keydown(e) {
     e.preventDefault();
   } else if(e.which == 27) { // ESC
     $("#command").val("");
+    input_change();
     e.preventDefault();
   }
 }
