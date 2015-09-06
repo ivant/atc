@@ -14,3 +14,4 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 # Files under different licenses:
 
 - [`fiber.min.js`](https://github.com/linkedin/Fiber) is licensed under the Apache license.
+- [`google-analytics-bundle.js`](https://github.com/GoogleChrome/chrome-platform-analytics) is licensed under the Apache license.

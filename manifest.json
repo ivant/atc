@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Air Traffic Controller",
   "description": "Air Traffic Controller simulator",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "icons": {
     "128": "assets/images/icons/airplane-128.png"
   },
@@ -13,6 +13,7 @@
   },
   "permissions": [
     "storage",
+    "contextMenus",
     "app.window.fullscreen.overrideEsc"
   ],
   "offline_enabled": true

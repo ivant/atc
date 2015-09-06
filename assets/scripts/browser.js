@@ -45,6 +45,11 @@ function browser_init_pre() {
         }
       });
     });
+    
+    ga_configure(function(service) {
+      prop.ga_tracker = ga_create_tracker(service);
+      prop.ga_tracker.sendEvent('Lifecycle', 'startup');
+    });
   } else {
     prop.storage = window.localStorage;
   }
