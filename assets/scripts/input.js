@@ -291,7 +291,7 @@ function input_history_next() {
 
 function input_run() {
   if(prop.input.callsign == "version") {
-    ui_log("Air Traffic Control simulator version " + prop.version.join("."));
+    ui_log(false, "Air Traffic Control simulator version " + prop.version.join("."));
     return true;
   } else if(prop.input.callsign == "tutorial") {
     tutorial_toggle();
@@ -299,9 +299,9 @@ function input_run() {
   } else if(prop.input.callsign == "auto") {
     aircraft_toggle_auto();
     if(prop.aircraft.auto.enabled) {
-      ui_log('automatic controller ENGAGED');
+      ui_log(false, 'automatic controller ENGAGED');
     } else {
-      ui_log('automatic controller OFF');
+      ui_log(false, 'automatic controller OFF');
     }
     return true;
   } else if(prop.input.callsign == "pause") {
@@ -353,11 +353,11 @@ function input_run() {
   }
 
   if(matches > 1) {
-    ui_log("multiple aircraft match the callsign, say again");
+    comm_announce(false, "multiple aircraft match the callsign, say again");
     return true;
   }
   if(match == -1) {
-    ui_log("no such aircraft, say again");
+    comm_announce(false, "no such aircraft, say again");
     return true;
   }
 
