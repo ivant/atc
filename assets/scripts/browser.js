@@ -45,6 +45,9 @@ function browser_init_pre() {
         }
       });
     });
+
+    RELEASE = true;
+    prop.log = LOG_WARNING;
     
     ga_configure(function(service) {
       prop.ga_tracker = ga_create_tracker(service);
