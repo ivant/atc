@@ -298,6 +298,17 @@ function radio_compass(input) {
   return s.join(" ");
 }
 
+// Convert position relative to origin to a radio text.
+function radio_position(pos, origin) {
+  if (!origin) origin = [0, 0];
+  var position = "";
+  var distance = round(distance2d(origin, pos) * 0.62);
+  position += distance + " mile" + s(distance);
+  var angle = Math.atan2(pos[0] - origin[0], pos[1] - origin[1]);
+  position += " " + radio_compass(compass_direction(angle));
+  return position;
+}
+
 function radio_trend(category, measured, target) {
   var CATEGORIES = {
     "altitude": ["descend to", "climb to",  "maintaining"],

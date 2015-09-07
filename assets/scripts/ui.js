@@ -98,19 +98,26 @@ function km(kilometers) {
   return kilometers * prop.ui.scale;
 }
 
-function ui_log(message) {
-  message = arguments[0];
-  var warn = false;
-  if(arguments[0] == true) {
-    warn = true;
-    message = arguments[1];
-  } else if(arguments.length >= 2) {
-    message += ", "+arguments[1];
-  }
+function comm_announce(warn, message) {
+  ui_log(warn, message);
+  speech_say(message, 'en-US', 1.2);
+}
 
-//  $("#log").append("<span class='item'><span class='from'>"+from+"</span><span class='message'>"+message+"</span></span>");
+function comm_tower(warn, aircraft, message) {
+  message = aircraft.getRadioCallsign() + ", " + message;
+  ui_log(warn, message);
+  speech_say(message, 'en-GB', random(1, 1.2));
+}
+
+function comm_aircraft(warn, aircraft, message) {
+  message = airport_get().radio + " tower, " + aircraft.getRadioCallsign() + " " + message;
+  ui_log(warn, message);
+  speech_say(message, 'en-IN', random(1, 1.2));
+}
+
+function ui_log(warn, message) {
   var html = $("<span class='item'><span class='message'>"+message+"</span></span>");
-  if(warn) html.addClass("warn");
+  if (warn) html.addClass("warn");
   $("#log").append(html);
   $("#log").scrollTop($("#log").get(0).scrollHeight);
   game_timeout(function(html) {
@@ -119,10 +126,6 @@ function ui_log(message) {
       html.remove();
     }, 10000);
   }, 3, window, html);
-
-  speech_say(message);
-
-//  console.log("MESSAGE: " + message);
 }
 
 function ui_airport_open() {
